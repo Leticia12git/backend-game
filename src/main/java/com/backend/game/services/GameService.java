@@ -1,0 +1,35 @@
+package com.backend.game.services;
+
+import com.backend.game.dto.GameDTO;
+import com.backend.game.dto.GameMinDTO;
+import com.backend.game.entities.Game;
+import com.backend.game.projections.GameMinProjection;
+import com.backend.game.repository.GameRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.List;
+
+public class GameService {
+    @Autowired
+    private GameRepository gameRepository;
+
+    @Transactional(readOnly = true)
+    public GameDTO findById(@PathVariable Long listId) {
+        Game result = gameRepository.findById(listId).get();
+        return new GameDTO(result);
+    }
+
+    @Transactional(readOnly = true)
+    public List<GameMinDTO> findAll() {
+        List<Game> result = gameRepository.findAll();
+        return result.stream().map(GameMinDTO::new).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<GameMinDTO> findByGameList(Long listId) {
+        List<GameMinProjection> games = gameRepository.searchByList(listId);
+        return games.stream().map(GameMinDTO::new).toList();
+    }
+}
